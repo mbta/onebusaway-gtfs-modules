@@ -57,7 +57,7 @@ public final class Transfer extends IdentityBean<Integer> {
   @CsvField(optional = true)
   private int minWheelchairTime = MISSING_VALUE;
 
-  @CsvField(optional = true)
+  @CsvField(optional = true, defaultValue = "0")
   private int wheelchairTransfer;
 
   public Transfer() {
