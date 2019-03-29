@@ -54,6 +54,12 @@ public final class Transfer extends IdentityBean<Integer> {
   @CsvField(optional = true)
   private int minTransferTime = MISSING_VALUE;
 
+  @CsvField(optional = true)
+  private int minWheelchairTime = MISSING_VALUE;
+
+  @CsvField(optional = true, defaultValue = "0")
+  private int wheelchairTransfer;
+
   public Transfer() {
 
   }
@@ -68,6 +74,8 @@ public final class Transfer extends IdentityBean<Integer> {
     this.toTrip = obj.toTrip;
     this.transferType = obj.transferType;
     this.minTransferTime = obj.minTransferTime;
+    this.minWheelchairTime = obj.minWheelchairTime;
+    this.wheelchairTransfer = obj.wheelchairTransfer;
   }
 
   @Override
@@ -150,6 +158,22 @@ public final class Transfer extends IdentityBean<Integer> {
 
   public void clearMinTransferTime() {
     this.minTransferTime = MISSING_VALUE;
+  }
+
+  public int getMinWheelchairTime() {
+    return minWheelchairTime;
+  }
+
+  public void setMinWheelchairTime(int minWheelchairTime) {
+    this.minWheelchairTime = minWheelchairTime;
+  }
+
+  public int getWheelchairTransfer() {
+    return wheelchairTransfer;
+  }
+
+  public void setWheelchairTransfer(int wheelchairTransfer) {
+    this.wheelchairTransfer = wheelchairTransfer;
   }
 
   public String toString() {
