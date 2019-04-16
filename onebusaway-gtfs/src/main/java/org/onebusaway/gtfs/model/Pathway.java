@@ -69,6 +69,9 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
   @CsvField(optional = true)
   private int stairCount = MISSING_VALUE;
 
+  @CsvField(optional = true)
+  private String signpostedAs;
+
   @Override
   public AgencyAndId getId() {
     return id;
@@ -157,6 +160,14 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
 
   public void setStairCount(int stairCount) {
     this.stairCount = stairCount;
+  }
+
+  public String getSignpostedAs() {
+    return signpostedAs;
+  }
+
+  public void setSignpostedAs(String signpostedAs) {
+    this.signpostedAs = signpostedAs;
   }
 
   @Override
