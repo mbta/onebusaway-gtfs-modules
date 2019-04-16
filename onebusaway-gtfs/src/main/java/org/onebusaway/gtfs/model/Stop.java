@@ -26,18 +26,18 @@ public final class Stop extends IdentityBean<AgencyAndId> {
 
   private static final long serialVersionUID = 1L;
   
-  private static final int MISSING_VALUE = -999;
+  public static final int MISSING_VALUE = -999;
 
   @CsvField(mapping = DefaultAgencyIdFieldMappingFactory.class)
   private AgencyAndId id;
 
   private String name;
 
-  @CsvField(mapping = LatLonFieldMappingFactory.class)
-  private double lat;
+  @CsvField(mapping = LatLonFieldMappingFactory.class, optional = true)
+  private double lat = MISSING_VALUE;
 
-  @CsvField(mapping = LatLonFieldMappingFactory.class)
-  private double lon;
+  @CsvField(mapping = LatLonFieldMappingFactory.class, optional = true)
+  private double lon = MISSING_VALUE;
 
   @CsvField(optional = true)
   private String code;
