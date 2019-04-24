@@ -43,34 +43,24 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
   @CsvField(name = "pathway_id", mapping = DefaultAgencyIdFieldMappingFactory.class)
   private AgencyAndId id;
 
+  private int pathwayType;
+
   @CsvField(name = "from_stop_id", mapping = EntityFieldMappingFactory.class)
   private Stop fromStop;
 
   @CsvField(name = "to_stop_id", mapping = EntityFieldMappingFactory.class)
   private Stop toStop;
 
-  @CsvField(optional = true)
-  private int traversalTime = MISSING_VALUE;
+  private int traversalTime;
 
   @CsvField(optional = true)
   private int wheelchairTraversalTime = MISSING_VALUE;
 
+  @CsvField(optional = true, defaultValue = "0")
   private int pathwayMode = 0;
 
   @CsvField(optional = true)
   private String pathwayCode;
-
-  @CsvField(optional = true)
-  private float length = MISSING_VALUE;
-
-  @CsvField(optional = true)
-  private float wheelchairLength = MISSING_VALUE;
-
-  @CsvField(optional = true)
-  private int stairCount = MISSING_VALUE;
-
-  @CsvField(optional = true)
-  private String signpostedAs;
 
   @Override
   public AgencyAndId getId() {
@@ -80,6 +70,14 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
   @Override
   public void setId(AgencyAndId id) {
     this.id = id;
+  }
+
+  public void setPathwayType(int pathwayType) {
+    this.pathwayType = pathwayType;
+  }
+
+  public int getPathwayType() {
+    return pathwayType;
   }
   
   public void setFromStop(Stop fromStop) {
@@ -136,38 +134,6 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
 
   public void setPathwayCode(String pathwayCode) {
     this.pathwayCode = pathwayCode;
-  }
-
-  public float getLength() {
-    return length;
-  }
-
-  public void setLength(float length) {
-    this.length = length;
-  }
-
-  public float getWheelchairLength() {
-    return wheelchairLength;
-  }
-
-  public void setWheelchairLength(float wheelchairLength) {
-    this.wheelchairLength = wheelchairLength;
-  }
-
-  public int getStairCount() {
-    return stairCount;
-  }
-
-  public void setStairCount(int stairCount) {
-    this.stairCount = stairCount;
-  }
-
-  public String getSignpostedAs() {
-    return signpostedAs;
-  }
-
-  public void setSignpostedAs(String signpostedAs) {
-    this.signpostedAs = signpostedAs;
   }
 
   @Override
