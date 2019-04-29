@@ -61,7 +61,7 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
   private String pathwayCode;
 
   @CsvField(optional = true)
-  private float length = MISSING_VALUE;
+  private float length = 0;
 
   @CsvField(optional = true)
   private float wheelchairLength = MISSING_VALUE;
