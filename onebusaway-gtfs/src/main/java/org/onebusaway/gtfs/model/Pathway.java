@@ -60,6 +60,18 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
   @CsvField(optional = true)
   private String pathwayCode;
 
+  @CsvField(optional = true)
+  private float length = MISSING_VALUE;
+
+  @CsvField(optional = true)
+  private float wheelchairLength = MISSING_VALUE;
+
+  @CsvField(optional = true)
+  private int stairCount = MISSING_VALUE;
+
+  @CsvField(optional = true)
+  private String signpostedAs;
+
   @Override
   public AgencyAndId getId() {
     return id;
@@ -124,6 +136,38 @@ public final class Pathway extends IdentityBean<AgencyAndId> {
 
   public void setPathwayCode(String pathwayCode) {
     this.pathwayCode = pathwayCode;
+  }
+
+  public float getLength() {
+    return length;
+  }
+
+  public void setLength(float length) {
+    this.length = length;
+  }
+
+  public float getWheelchairLength() {
+    return wheelchairLength;
+  }
+
+  public void setWheelchairLength(float wheelchairLength) {
+    this.wheelchairLength = wheelchairLength;
+  }
+
+  public int getStairCount() {
+    return stairCount;
+  }
+
+  public void setStairCount(int stairCount) {
+    this.stairCount = stairCount;
+  }
+
+  public String getSignpostedAs() {
+    return signpostedAs;
+  }
+
+  public void setSignpostedAs(String signpostedAs) {
+    this.signpostedAs = signpostedAs;
   }
 
   @Override
