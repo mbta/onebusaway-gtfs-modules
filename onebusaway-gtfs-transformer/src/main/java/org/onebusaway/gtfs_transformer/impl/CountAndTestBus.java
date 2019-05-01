@@ -99,7 +99,7 @@ public class CountAndTestBus implements GtfsTransformStrategy {
                 if (tripIsThisWeek(dao.getCalendarDatesForServiceId(trip.getServiceId()))) {
                     atisTripsThisWeek++;
                     if (referenceTrips.containsKey(trip.getId().getId())) {
-                        matchingTripsThisWeek++;
+                        //ATIS trips this week that match a reference trip (reference trip may not be this week, check this further down)
                         matchingIdsThisWeek.add(trip.getId().getId());
                     }
                 }
@@ -156,21 +156,19 @@ public class CountAndTestBus implements GtfsTransformStrategy {
         int refTripsThisWeekWithSdon = 0;
         int refTripsThisWeekWoutSdonWithA9 = 0;
         int refTripsThisWeekWoutSdonWithE9 = 0;
+        int refTripsThisWeekWoutSdonWithB9 = 0;
         int checkMatchesThisWeek = 0;
         int doesntMatchThisWeek = 0;
         int leftOverNoMatchThisWeek = 0;
         List<String> refTripsMissingATIS = new ArrayList<String>();
-        //_log.info("Reference trips that don't have a match in ATIS: ");
-        _log.error("Ref trips that don't match atis and aren't SDon: ");
+        _log.info("Ref trips that don't match atis and aren't SDon: ");
         for (Trip refTrip : reference.getAllTrips()) {
             //count number of reference trips this week
             Set<ServiceDate> activeDates = refCalendarService.getServiceDatesForServiceId(refTrip.getServiceId());
 
             if (tripIsThisWeek(activeDates)) {
                 refTripsThisWeek++;
-
                 if (!matchingIdsThisWeek.contains(refTrip.getId().getId())) {
-                    //_log.info(refTrip.getId().getId());
                     doesntMatchThisWeek++;
                     if (refTrip.getId().getId().contains("SDon")) {
                         refTripsThisWeekWithSdon++;
@@ -179,12 +177,17 @@ public class CountAndTestBus implements GtfsTransformStrategy {
                     } else if (refTrip.getId().getId().contains("E9")) {
                         refTripsThisWeekWoutSdonWithE9++;
                     }
+                    else if (refTrip.getId().getId().contains("B9")) {
+                        refTripsThisWeekWoutSdonWithB9++;
+                    }
                     else {
                         leftOverNoMatchThisWeek++;
                         _log.info(refTrip.getId().getId());
                     }
                 } else {
-                    checkMatchesThisWeek++;
+                    matchingTripsThisWeek++;
+                    //the number of ATIS trips this week that match with a reference trip
+                    //that is also this week
                 }
             }
 
@@ -213,8 +216,9 @@ public class CountAndTestBus implements GtfsTransformStrategy {
 
         _log.info("ATIS Trips: {}, Reference: {}, match: {}, In ref NotInATIS: {}, In ref NotInATIS Sdon: {}, In ref NotInATIS not Sdon is H9: {}, Current Service: {}", dao.getAllTrips().size(), reference.getAllTrips().size(), matches, noMatch, refTripsWithSdon, refTripsWoutSdonWithh9, curSerTrips);
         _log.info("ATIS Trips this week {}, Reference trips this week {}, ATIS Trips this week that are also Reference Trips this week {}", atisTripsThisWeek, refTripsThisWeek, matchingTripsThisWeek);
-
-        _log.info("This week matches: {}. This week doesn't match {}, in ref NotInATIS Sdon: {}, In ref NotInATIS not Sdon is A9: {}, E9: {}, Leftover: {}",  checkMatchesThisWeek, doesntMatchThisWeek, refTripsThisWeekWithSdon, refTripsThisWeekWoutSdonWithA9, refTripsThisWeekWoutSdonWithE9, leftOverNoMatchThisWeek);
+        _log.info("Matches this week {}", matchingTripsThisWeek);
+        _log.info("This week matches: {}. This week doesn't match {}, in ref NotInATIS Sdon: {}, In ref NotInATIS not Sdon is A9: {}, E9: {}, B9: {} Leftover: {}",
+                matchingTripsThisWeek, doesntMatchThisWeek, refTripsThisWeekWithSdon, refTripsThisWeekWoutSdonWithA9, refTripsThisWeekWoutSdonWithE9, refTripsThisWeekWoutSdonWithB9, leftOverNoMatchThisWeek);
 
         _log.info("Stops: {}, Stop times {}, Trips w/ st: {}, Trips w/out st: {}", dao.getAllStops().size(), dao.getAllStopTimes().size(), countSt, countNoSt);
         _log.info("Calendar dates: {}, Trips w/cd {}, Trips w/out cd: {}", dao.getAllCalendarDates().size(), countCd, countNoCd);
@@ -229,6 +233,10 @@ public class CountAndTestBus implements GtfsTransformStrategy {
         _log.info("ATIS Stops: {}, Reference: {}, ATIS match to reference: {}", dao.getAllStops().size(), reference.getAllStops().size(), matches);
 
         ExternalServices es =  new ExternalServicesBridgeFactory().getExternalServices();
+        es.publishMetric(getNamespace(), "ATISBusTripsThisWeek", null, null, atisTripsThisWeek);
+        es.publishMetric(getNamespace(), "refBusTripsThisWeek", null, null, refTripsThisWeek);
+        es.publishMetric(getNamespace(), "matchingBusTripsThisWeek", null, null, matchingTripsThisWeek);
+
         if (curSerTrips < 1) {
             es.publishMessage(getTopic(), "Agency: "
                     + dao.getAllAgencies().iterator().next().getId()
@@ -255,9 +263,7 @@ public class CountAndTestBus implements GtfsTransformStrategy {
         Date today = removeTime(new Date());
         Date inOneWeek = removeTime(addDays(new Date(), 7));
         for (ServiceDate calDate : serviceDates) {
-            //_log.error("Cal Date: {} test date: {}", calDate, testDate);
             Date date = removeTime(calDate.getAsDate());
-            //_log.error("Date: {} test date: {}", date, testDate);
             if (date.after(today) && date.before(inOneWeek)) {
                 return true;
             }
@@ -269,9 +275,7 @@ public class CountAndTestBus implements GtfsTransformStrategy {
         Date today = removeTime(new Date());
         Date inOneWeek = removeTime(addDays(new Date(), 7));
         for (ServiceCalendarDate calDate : serviceDates) {
-            //_log.error("Cal Date: {} test date: {}", calDate, testDate);
             Date date = constructDate(calDate.getDate());
-            //_log.error("Date: {} test date: {}", date, testDate);
             if (calDate.getExceptionType() == 1 && date.after(today) && date.before(inOneWeek)) {
                 return true;
 

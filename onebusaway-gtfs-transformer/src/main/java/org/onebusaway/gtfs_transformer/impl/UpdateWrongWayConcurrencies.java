@@ -62,14 +62,12 @@ public class UpdateWrongWayConcurrencies implements GtfsTransformStrategy {
                     "Concurrency file does not exist: " + concurrencyFile.getName());
         }
 
-        _log.error("Concurrencies File exists");
-
         List<String> stopLines = new InputLibrary().readList((String) context.getParameter("concurrencyFile"));
 
         String agency = dao.getAllStops().iterator().next().getId().getAgencyId();
-        _log.error("Agency: {}", agency);
 
         for (String stopInfo : stopLines) {
+            int count=0;
             String[] stopArray = stopInfo.split(",");
             if (stopArray == null || stopArray.length < 2) {
                 _log.info("bad line {}", stopInfo);
@@ -88,7 +86,6 @@ public class UpdateWrongWayConcurrencies implements GtfsTransformStrategy {
 
             for (Stop stop : dao.getAllStops()) {
                 if (stop.getId().getId().equals(toStopId)) {
-                    _log.error("TO match. Stop: {}, agency: {}, id: {}", stop.getId(), stop.getId().getAgencyId(), stop.getId().getId());
                     toStop = stop;
                     break;
                 }
@@ -102,7 +99,10 @@ public class UpdateWrongWayConcurrencies implements GtfsTransformStrategy {
                                 if (stopTime.getStop().getId().getId() != null) {
                                     if (stopTime.getStop().getId().getId().equals(fromStopId)) {
                                         if (stopTime.getTrip().getDirectionId().equals(directionId)) {
-                                            _log.error("Setting id: {} to: {}, direction: {}, dirId: {}", stopTime.getStop().getId().getId(), toStopId, directionId, stopTime.getTrip().getDirectionId());
+                                            if (count==0) { //log once for each line that updates an id
+                                                _log.info("Setting route: {} direction {} stop id: {} to: {}", stopTime.getTrip().getRoute().getId(), stopTime.getTrip().getDirectionId(), stopTime.getStop().getId().getId(), toStopId);
+                                                count++;
+                                            }
                                             stopTime.setStop(toStop);
                                         }
                                     }
