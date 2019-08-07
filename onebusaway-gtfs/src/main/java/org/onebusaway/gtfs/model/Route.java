@@ -72,6 +72,11 @@ public final class Route extends IdentityBean<AgencyAndId> {
   @CsvField(optional = true)
   private String brandingUrl;
 
+  // Custom extension representing (bus) route accepts regional fare card.
+  // That is it has a vending machine on board.
+  @CsvField(optional = true, name = "regional_fare_card", defaultValue = "0")
+  private int regionalFareCardAccepted;
+
   public Route() {
 
   }
@@ -90,6 +95,7 @@ public final class Route extends IdentityBean<AgencyAndId> {
     this.sortOrder = r.sortOrder;
     this.brandingUrl = r.brandingUrl;
     this.eligibilityRestricted = r.eligibilityRestricted;
+    this.regionalFareCardAccepted = r.regionalFareCardAccepted;
   }
 
   public AgencyAndId getId() {
@@ -221,9 +227,18 @@ public final class Route extends IdentityBean<AgencyAndId> {
     this.eligibilityRestricted = eligibilityRestricted;
   }
 
+  public int getRegionalFareCardAccepted() {
+    return regionalFareCardAccepted;
+  }
+
+  public void setRegionalFareCardAccepted(int regionalFareCardAccepted) {
+    this.regionalFareCardAccepted = regionalFareCardAccepted;
+  }
+
 
   @Override
   public String toString() {
     return "<Route " + id + " " + shortName + ">";
   }
+
 }

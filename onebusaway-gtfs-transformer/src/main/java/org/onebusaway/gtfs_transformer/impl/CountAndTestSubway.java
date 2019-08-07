@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.HashSet;
 
 public class CountAndTestSubway implements GtfsTransformStrategy {
 
@@ -42,6 +43,8 @@ public class CountAndTestSubway implements GtfsTransformStrategy {
     @Override
     public void run(TransformContext context, GtfsMutableRelationalDao dao) {
         GtfsMutableRelationalDao reference = (GtfsMutableRelationalDao) context.getReferenceReader().getEntityStore();
+        String agency = dao.getAllAgencies().iterator().next().getId();
+        String name = dao.getAllAgencies().iterator().next().getName();
 
         HashMap<String, Route> referenceRoutes = new HashMap<>();
         for (Route route : reference.getAllRoutes()) {
@@ -129,21 +132,40 @@ public class CountAndTestSubway implements GtfsTransformStrategy {
         ExternalServices es =  new ExternalServicesBridgeFactory().getExternalServices();
         if (curSerTrips < 1) {
             es.publishMessage(getTopic(), "Agency: "
-                    + dao.getAllAgencies().iterator().next().getId()
+                    + agency
                     + " "
-                    + dao.getAllAgencies().iterator().next().getName()
+                    + name
                     + " has no current service.");
         }
 
         if (countNoHs > 0) {
             es.publishMessage(getTopic(), "Agency: "
-                    + dao.getAllAgencies().iterator().next().getId()
+                    + agency
                     + " "
-                    + dao.getAllAgencies().iterator().next().getName()
+                    + name
                     + " has trips w/out headsign: "
                     + countNoHs);
             es.publishMetric(getNamespace(), "noHeadsigns", null, null, countNoHs);
             _log.error("There are trips with no headsign");
+        }
+
+        HashSet<String> ids = new HashSet<String>();
+        for (Stop stop : dao.getAllStops()) {
+            //check for duplicate stop ids.
+            if (ids.contains(stop.getId().getId())) {
+                _log.error("Duplicate stop ids! Agency {} stop id {}", agency, stop.getId().getId());
+                es.publishMessage(getTopic(), "Agency: "
+                        + agency
+                        + " "
+                        + name
+                        + " has duplicate stop id: "
+                        + stop.getId());
+                throw new IllegalStateException(
+                        "There are duplicate stop ids!");
+            }
+            else {
+                ids.add(stop.getId().getId());
+            }
         }
     }
 

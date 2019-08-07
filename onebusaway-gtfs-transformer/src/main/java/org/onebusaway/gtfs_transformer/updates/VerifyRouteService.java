@@ -32,9 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/*
+Used for subway service as it has specific logic for the subway routes and the express routes
+ */
 public class VerifyRouteService implements GtfsTransformStrategy {
 
-    private final Logger _log = LoggerFactory.getLogger(CountAndTestSubway.class);
+    private final Logger _log = LoggerFactory.getLogger(VerifyRouteService.class);
 
     @Override
     public String getName() {
@@ -87,15 +90,15 @@ public class VerifyRouteService implements GtfsTransformStrategy {
                 for (Trip refTrip : reference.getTripsForRoute(refRoute)) {
                     Set<ServiceDate> activeDates = refCalendarService.getServiceDatesForServiceId(refTrip.getServiceId());
                     if (activeDates.contains(sToday)) {
-                        _log.info("Reference has service for this route today but ATIS has none: {}", route.getId());
-                        es.publishMessage(getTopic(), "Route: "
-                                + route.getId()
-                                + " has no current service!");
-                        //ignore express routes, MOTP-1184
+                        //ignore express routes, MOTP-1184 MOTP-1259
                         if (!route.getId().getId().contains("X")) {
                             missingService = true;
-                            break reftriploop;
+                            _log.info("Reference has service for this route today but ATIS has none: {}", route.getId());
+                            es.publishMessage(getTopic(), "Route: "
+                                    + route.getId()
+                                    + " has no current service!");
                         }
+                        break reftriploop;
                     }
                 }
             }
