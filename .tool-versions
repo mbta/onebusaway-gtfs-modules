@@ -1,2 +1,2 @@
-java adopt-openjdk-14.0.1+7_openj9-0.20.0
+java adoptopenjdk-14.0.1+7.1.openj9-0.20.0
 maven 3.6.3
